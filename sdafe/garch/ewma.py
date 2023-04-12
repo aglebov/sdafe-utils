@@ -98,8 +98,8 @@ def est_ewma(l0: float, innov: np.array) -> Tuple[float, float]:
         the estimated values of lambda and its squared error
     """
     res = minimize(nllik_ewma, l0, innov, bounds=[(0.001, 0.999)])
-    se = np.sqrt(res.hess_inv.todense()[0])  # standard error estimate based on Fisher information
-    return res.x, se
+    se = np.sqrt(res.hess_inv.todense()[0, 0])  # standard error estimate based on Fisher information
+    return res.x[0], se
 
 
 def sigma_ewma(l: float, innov: np.array) -> np.array:
