@@ -1,3 +1,7 @@
+"""Translation to Python of utilities implemented by Ruppert and Matteson
+
+See https://people.orie.cornell.edu/davidr/SDAFE2/Rscripts/SDAFE2.R
+"""
 from typing import Tuple
 
 import numpy as np
