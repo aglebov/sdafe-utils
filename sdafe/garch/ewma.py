@@ -122,8 +122,7 @@ def sigma_ewma(l: float, innov: np.array) -> np.array:
         an array of estimated covariance matrices at each time, size (p, p, n),
         where n is the number of observations and p is the number of variables
     """
-    n = innov.shape[0]  # number of observations
-    d = innov.shape[1]  # number of variables
+    n, d = innov.shape  # number of observations and variables
     sigma_hat = np.cov(innov, rowvar=False, ddof=1)  # marginal covariance matrix
     sigma_t = np.zeros((d, d, n))  # result matrix to be populated
     sigma_t[:, :, 0:2] = sigma_hat[:, :, np.newaxis]  # initialise the first two values for subsequent recursion
