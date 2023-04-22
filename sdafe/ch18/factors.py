@@ -117,7 +117,7 @@ def sufficiency_test(fa: FactorAnalyzer, nobs: int, nvar: int) -> Tuple[float, i
     df = ((nvar - fa.n_factors) ** 2 - nvar - fa.n_factors) // 2
     obj = fa._fit_ml_objective(fa.get_uniquenesses(), fa.corr_, fa.n_factors)
     statistic = (nobs - 1 - (2 * nvar + 5) / 6 - (2 * fa.n_factors) / 3) * obj
-    pval = 1 - stats.chi2.cdf(statistic, df=df)
+    pval = stats.chi2.sf(statistic, df=df)
     return statistic, df, pval
 
 
