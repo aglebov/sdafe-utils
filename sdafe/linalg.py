@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def matrix_sqrt_inv(A: np.array) -> np.array:
     """Calculate the inverse square root of a matrix if defined
 
@@ -12,6 +13,10 @@ def matrix_sqrt_inv(A: np.array) -> np.array:
     -------
     np.array
         the inverse square root matrix
+
+    Notes
+    -----
+    See https://people.orie.cornell.edu/davidr/SDAFE2/Rscripts/SDAFE2.R
     """
     u, s, vh = np.linalg.svd(A)
     if np.min(s) >= 0:

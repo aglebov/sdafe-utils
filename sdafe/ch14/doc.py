@@ -21,6 +21,10 @@ def doc_test(A: np.array, m: int) -> pd.DataFrame:
            - `Q(m)`: the test statistic
            - `d.f.`: the number of degrees of freedom
            - `p-value`: the p-value
+
+    Notes
+    -----
+    See https://people.orie.cornell.edu/davidr/SDAFE2/Rscripts/SDAFE2.R
     """
     n, k = A.shape
     res = []

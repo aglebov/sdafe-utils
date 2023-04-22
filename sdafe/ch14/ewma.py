@@ -8,7 +8,7 @@ import numpy as np
 from scipy.optimize import minimize
 
 
-def sigma_step(l: float, t: int, a_prev: np.array, sigma_prev: np.array) -> np.array:
+def _sigma_step(l: float, t: int, a_prev: np.array, sigma_prev: np.array) -> np.array:
     """The recursive formula for sigma
 
     Parameters
@@ -31,7 +31,7 @@ def sigma_step(l: float, t: int, a_prev: np.array, sigma_prev: np.array) -> np.a
     return ((1 - l) * a_prev @ a_prev.T + l * (1 - l ** (t - 1)) * sigma_prev) / (1 - l ** t)
 
 
-def llik_norm(x: np.array, sigma: np.array) -> float:
+def _llik_norm(x: np.array, sigma: np.array) -> float:
     """Log-likelihood of observing `x` under the normal distribution N(0, `sigma`)
 
     Parameters
@@ -52,7 +52,7 @@ def llik_norm(x: np.array, sigma: np.array) -> float:
     return -0.5 * np.log(det_sigma) - 0.5 * x.T @ inv_sigma @ x
 
 
-def nllik_ewma(l: float, innov: np.array) -> float:
+def _nllik_ewma(l: float, innov: np.array) -> float:
     """Objective function for maximising log-likelihood
 
     Parameters
@@ -72,16 +72,16 @@ def nllik_ewma(l: float, innov: np.array) -> float:
 
     llik = 0.0
     # the log-likelihood contributions for the first two observations
-    llik += llik_norm(innov[0, :, np.newaxis], sigma_hat)
+    llik += _llik_norm(innov[0, :, np.newaxis], sigma_hat)
     at = innov[1, :, np.newaxis]
-    llik += llik_norm(at, sigma_hat)
+    llik += _llik_norm(at, sigma_hat)
 
     n = innov.shape[0]  # number of observations
     for t in range(2, n):
         atm1 = at  # previous observation
         at = innov[t, :, np.newaxis]  # current observation
-        sigma_hat = sigma_step(l, t, atm1, sigma_hat)  # evolve sigma
-        llik += llik_norm(at, sigma_hat)
+        sigma_hat = _sigma_step(l, t, atm1, sigma_hat)  # evolve sigma
+        llik += _llik_norm(at, sigma_hat)
 
     return -llik  # the objective function is for minimisation, so negate the value to maximise log-likelihood
 
@@ -101,7 +101,7 @@ def est_ewma(l0: float, innov: np.array) -> Tuple[float, float]:
     Tuple[float, float]
         the estimated values of lambda and its squared error
     """
-    res = minimize(nllik_ewma, l0, innov, bounds=[(0.001, 0.999)])
+    res = minimize(_nllik_ewma, l0, innov, bounds=[(0.001, 0.999)])
     se = np.sqrt(res.hess_inv.todense()[0, 0])  # standard error estimate based on Fisher information
     return res.x[0], se
 
@@ -128,5 +128,5 @@ def sigma_ewma(l: float, innov: np.array) -> np.array:
     sigma_t[:, :, 0:2] = sigma_hat[:, :, np.newaxis]  # initialise the first two values for subsequent recursion
     for t in range(2, n):
         atm1 = innov[t - 1, :, np.newaxis]  # innovations at time t-1
-        sigma_t[:, :, t] = sigma_step(l, t, atm1, sigma_t[:, :, t - 1])
+        sigma_t[:, :, t] = _sigma_step(l, t, atm1, sigma_t[:, :, t - 1])
     return sigma_t
