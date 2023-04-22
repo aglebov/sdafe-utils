@@ -97,6 +97,9 @@ def estimate_corr(data: pd.DataFrame, alpha: float = 0.95) -> pd.DataFrame:
 def sufficiency_test(fa: FactorAnalyzer, nobs: int, nvar: int) -> Tuple[float, int, float]:
     """Sufficiency test as reported by the factanal function in R
 
+    The null hypothesis of the test is that the selected number of factors
+    are sufficient to explain the covariance.
+
     Parameters
     ----------
     fa: FactorAnalyzer
@@ -116,3 +119,27 @@ def sufficiency_test(fa: FactorAnalyzer, nobs: int, nvar: int) -> Tuple[float, i
     statistic = (nobs - 1 - (2 * nvar + 5) / 6 - (2 * fa.n_factors) / 3) * obj
     pval = 1 - stats.chi2.cdf(statistic, df=df)
     return statistic, df, pval
+
+
+def evaluate_factors(data: pd.DataFrame) -> pd.DataFrame:
+    """Try performing factor analysis with varying number of factors
+
+    Parameters
+    ----------
+    data: pd.DataFrame
+        the input date: rows are observations, columns are variables
+
+    Returns
+    -------
+    pd.DataFrame
+        a summary of results with the following columns
+           * Statistic: the test statistic of the sufficiency test
+           * df: the number of degrees of freedom from factor analysis
+           * p-value: the p-value of the sufficiency test
+    """
+    temp = []
+    for n_factors in range(1, data.shape[1] + 1):
+        fa = FactorAnalyzer(n_factors=n_factors, rotation=None, method='ml')
+        fa.fit(data)
+        temp.append([n_factors, *sufficiency_test(fa, *data.shape)])
+    return pd.DataFrame(temp, columns=['Factors', 'Statistic', 'df', 'p-value']).set_index('Factors')
