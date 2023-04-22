@@ -4,6 +4,9 @@ import numpy as np
 import pandas as pd
 import scipy.stats as stats
 
+from factor_analyzer import FactorAnalyzer
+
+
 def bootstrap_corr(
         data: pd.DataFrame,
         n_boot: int = 10_000,
@@ -89,3 +92,27 @@ def estimate_corr(data: pd.DataFrame, alpha: float = 0.95) -> pd.DataFrame:
         temp,
         columns=['Variable1', 'Variable2', 'Correlation', 'Lower bound', 'Upper bound', 'p-value']
     )
+
+
+def sufficiency_test(fa: FactorAnalyzer, nobs: int, nvar: int) -> Tuple[float, int, float]:
+    """Sufficiency test as reported by the factanal function in R
+
+    Parameters
+    ----------
+    fa: FactorAnalyzer
+        a fitted FactorAnalyzer instance
+    nobs: int
+        the number of observations in the input data
+    nvar: int
+        the number of variables in the input data
+
+    Returns
+    -------
+    Tuple[float, int, float]
+        a tuple containing the test statistic, the number of degrees of freedom and the p-value
+    """
+    df = ((nvar - fa.n_factors) ** 2 - nvar - fa.n_factors) // 2
+    obj = fa._fit_ml_objective(fa.get_uniquenesses(), fa.corr_, fa.n_factors)
+    statistic = (nobs - 1 - (2 * nvar + 5) / 6 - (2 * fa.n_factors) / 3) * obj
+    pval = 1 - stats.chi2.cdf(statistic, df=df)
+    return statistic, df, pval
