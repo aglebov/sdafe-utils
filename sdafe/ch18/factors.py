@@ -2,7 +2,7 @@ from typing import Tuple
 
 import numpy as np
 import pandas as pd
-
+import scipy.stats as stats
 
 def bootstrap_corr(
         data: pd.DataFrame,
@@ -55,3 +55,37 @@ def bootstrap_corr(
         return pd.DataFrame(a, index=var_names, columns=var_names)
 
     return to_df(estimate), to_df(confints[0]), to_df(confints[1])
+
+
+def estimate_corr(data: pd.DataFrame, alpha: float = 0.95) -> pd.DataFrame:
+    """Estimate correlations, confidence intervals and p-values for pairs of variables
+
+    Parameters
+    ----------
+    data: pd.DataFrame
+        the input data: rows are observations, columns are variables
+    alpha: float
+        the confidence for the confidence interval. Default: 0.95
+
+    Returns
+    -------
+    pd.DataFrame
+        a dataframe of results with rows for every pair of variables in the input data
+        and the following columns
+           * Variable1: the name of the first variable
+           * Variable2: the name of the second variable
+           * Correlation: the estimate of the correlation between the two variables
+           * Lower bound: the lower bound of the confidence interval
+           * Upper bound: the upper bound of the confidence interval
+           * p-value: the p-value for the hypothesis that the true correlation is 0
+    """
+    temp = []
+    for i in range(data.shape[1]):
+        for j in range(i + 1, data.shape[1]):
+            res = stats.pearsonr(data.iloc[:, i], data.iloc[:, j])
+            confint = res.confidence_interval(alpha)
+            temp.append([data.columns[i], data.columns[j], res.statistic, confint[0], confint[1], res.pvalue])
+    return pd.DataFrame(
+        temp,
+        columns=['Variable1', 'Variable2', 'Correlation', 'Lower bound', 'Upper bound', 'p-value']
+    )
