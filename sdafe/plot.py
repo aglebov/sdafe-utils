@@ -41,22 +41,43 @@ def abs_diff_heatmap(df1: pd.DataFrame, df2: pd.DataFrame, ax: Optional[plt.Axes
             ax.text(j, i, f'{abs_diff.iloc[i, j]:.2f}', ha="center", va="center", color="w")
 
 
-def plot_qq_norm(ax: plt.Axes, vals: np.ndarray | pd.Series) -> None:
+def plot_qq_norm(ax: plt.Axes, sample: np.ndarray | pd.Series) -> None:
     """QQ plot with a regression line through the 25% and 75% quantiles
 
     Parameters
     ----------
     ax: plt.Axes
         the subplot to use
-    vals: np.ndarray | pd.Series
+    sample: np.ndarray | pd.Series
         the sample to plot
     """
     qs = np.array([0.25, 0.75])
 
-    stats.probplot(vals, dist="norm", plot=ax, fit=False)
+    stats.probplot(sample, dist="norm", plot=ax, fit=False)
 
     # draw a regression line through 0.25 and 0.75 quantiles
-    coord = lambda q: (stats.norm.ppf(q), np.quantile(vals, q))
+    coord = lambda q: (stats.norm.ppf(q), np.quantile(sample, q))
+    ax.axline(coord(qs[0]), coord(qs[1]), color='red')
+
+
+def plot_qq_t(ax: plt.Axes, sample: np.ndarray | pd.Series, df: int) -> None:
+    """QQ plot with a regression line through the 25% and 75% quantiles
+
+    Parameters
+    ----------
+    ax: plt.Axes
+        the subplot to use
+    sample: np.ndarray | pd.Series
+        the sample to plot
+    df: int
+        the degrees of freedom of the t-distribution to use
+    """
+    qs = np.array([0.25, 0.75])
+
+    stats.probplot(sample, dist="t", plot=ax, fit=False, sparams=(df,))
+
+    # draw a regression line through 0.25 and 0.75 quantiles
+    coord = lambda q: (stats.t.ppf(q, df=df), np.quantile(sample, q))
     ax.axline(coord(qs[0]), coord(qs[1]), color='red')
 
 
