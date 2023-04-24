@@ -3,12 +3,12 @@ import pandas as pd
 import scipy.stats as stats
 
 
-def doc_test(A: np.array, m: int) -> pd.DataFrame:
+def doc_test(A: np.ndarray, m: int) -> pd.DataFrame:
     """Test for dynamic orthogonal components
 
     Parameters
     ----------
-    A: np.array
+    A: np.ndarray
         the matrix of time series: rows are observations, columns are variables
     m: int
         the number of lags to test

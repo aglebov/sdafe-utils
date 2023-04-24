@@ -41,8 +41,16 @@ def abs_diff_heatmap(df1: pd.DataFrame, df2: pd.DataFrame, ax: Optional[plt.Axes
             ax.text(j, i, f'{abs_diff.iloc[i, j]:.2f}', ha="center", va="center", color="w")
 
 
-def plot_qq_norm(ax, vals) -> None:
-    """QQ plot with a regression line through the 25% and 75% quantiles"""
+def plot_qq_norm(ax: plt.Axes, vals: np.ndarray | pd.Series) -> None:
+    """QQ plot with a regression line through the 25% and 75% quantiles
+
+    Parameters
+    ----------
+    ax: plt.Axes
+        the subplot to use
+    vals: np.ndarray | pd.Series
+        the sample to plot
+    """
     qs = np.array([0.25, 0.75])
 
     stats.probplot(vals, dist="norm", plot=ax, fit=False)
@@ -52,8 +60,20 @@ def plot_qq_norm(ax, vals) -> None:
     ax.axline(coord(qs[0]), coord(qs[1]), color='red')
 
 
-def plot_kde(ax, vals, label='KDE', num_points=100) -> None:
-    """Plot a Gaussian kernel density estimate"""
+def plot_kde(ax: plt.Axes, vals: np.ndarray | pd.Series, label: str = 'KDE', num_points: int = 100) -> None:
+    """Plot a Gaussian kernel density estimate
+
+    Parameters
+    ----------
+    ax: plt.Axes
+        the subplot to use
+    vals: np.ndarray | pd.Series
+        the sample to plot
+    label: str
+        the label for plotted line. Default: 'KDE'
+    num_points: int
+        the number of points to use for plotting the KDE. Default: 100
+    """
     if isinstance(vals, pd.Series):
         vals = vals.values
     kde = KernelDensity(bandwidth=silverman_bw(vals), kernel='gaussian').fit(vals.reshape(-1, 1))

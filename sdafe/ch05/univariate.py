@@ -6,12 +6,12 @@ from scipy.optimize import minimize, OptimizeResult
 import scipy.stats as stats
 
 
-def silverman_bw(vals: Union[np.array, pd.Series]) -> float:
+def silverman_bw(vals: np.ndarray | pd.Series) -> float:
     """Select bandwidth for a kernel density estimator using Silverman's rule of thumb
 
     Parameters
     ----------
-    data: Union[np.array, pd.Series]
+    vals: np.ndarray | pd.Series
         input data
 
     Returns
@@ -26,12 +26,12 @@ def silverman_bw(vals: Union[np.array, pd.Series]) -> float:
     return 0.9 * min(np.std(vals, ddof=1), stats.iqr(vals) / 1.34) * len(vals) ** (-0.2)
 
 
-def loglik_t(x: Union[np.array, pd.Series], loc: float, scale: float, df: int) -> float:
+def loglik_t(x: np.ndarray | pd.Series, loc: float, scale: float, df: int) -> float:
     """Log-likelihood of a sample under t-distribution
 
     Parameters
     ----------
-    x: Union[np.array, pd.Series]
+    x: np.ndarray | pd.Series
         the sample to use
     loc: float
         the location parameter of the t-distribution
@@ -48,12 +48,12 @@ def loglik_t(x: Union[np.array, pd.Series], loc: float, scale: float, df: int) -
     return np.sum(-stats.t.logpdf(x, loc=loc, scale=scale, df=df))
 
 
-def fit_t_distr(x: Union[np.array, pd.Series]) -> OptimizeResult:
+def fit_t_distr(x: np.ndarray | pd.Series) -> OptimizeResult:
     """Fit t-distribution to the input data using the maximum likelihood method
 
     Parameters
     ----------
-    x: Union[np.array, pd.Series]
+    x: np.ndarray | pd.Series
         the sample to use
 
     Returns

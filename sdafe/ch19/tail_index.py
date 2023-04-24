@@ -3,17 +3,17 @@ from typing import Tuple
 import numpy as np
 
 
-def hill_curve(vals: np.array) -> Tuple[np.array, np.array, np.array]:
+def hill_curve(vals: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Calculate values for the Hill plot
 
     Parameters
     ----------
-    vals: np.array
+    vals: np.ndarray
         the input sample
 
     Returns
     -------
-    Tuple[np.array, np.array, np.array]
+    Tuple[np.ndarray, np.ndarray, np.ndarray]
         a tuple of three arrays: the values of `c`, `n(c)` and `a(c)` in Eq. (19.32) in SDAFE
     """
     vals = np.sort(vals)
@@ -26,16 +26,16 @@ def hill_curve(vals: np.array) -> Tuple[np.array, np.array, np.array]:
 
 
 def hill_curve2(
-        vals: np.array,
+        vals: np.ndarray,
         lower_q: float = 0.025,
         upper_q: float = 0.25,
         npoints: int = 100
-) -> Tuple[np.array, np.array, np.array]:
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Calculate values for the Hill plot using equally spaced threshold values
 
     Parameters
     ----------
-    vals: np.array
+    vals: np.ndarray
         the input sample
     lower_q: float
         the quantile of the sample to use as the smallest threshold value. Default: 0.025
@@ -46,7 +46,7 @@ def hill_curve2(
 
     Returns
     -------
-    Tuple[np.array, np.array, np.array]
+    Tuple[np.ndarray, np.ndarray, np.ndarray]
         a tuple of three arrays: the values of `c`, `n(c)` and `a(c)` in Eq. (19.32) in SDAFE
     """
     n_tail = np.sum(vals <= np.quantile(vals, upper_q))

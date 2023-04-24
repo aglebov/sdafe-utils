@@ -8,7 +8,7 @@ import numpy as np
 from scipy.optimize import minimize
 
 
-def _sigma_step(l: float, t: int, a_prev: np.array, sigma_prev: np.array) -> np.array:
+def _sigma_step(l: float, t: int, a_prev: np.ndarray, sigma_prev: np.ndarray) -> np.ndarray:
     """The recursive formula for sigma
 
     Parameters
@@ -17,13 +17,14 @@ def _sigma_step(l: float, t: int, a_prev: np.array, sigma_prev: np.array) -> np.
         the value of lambda to use
     t: int
         zero-based time index
-    a_prev: np.array
+    a_prev: np.ndarray
         the current column-vector of innovations
-    sigma_prev: np.array
+    sigma_prev: np.ndarray
         the covariance matrix from the preceding step
 
     Returns
     -------
+    np.ndarray
         the new covariance matrix
     """
     assert sigma_prev.shape[0] == sigma_prev.shape[1]
@@ -31,14 +32,14 @@ def _sigma_step(l: float, t: int, a_prev: np.array, sigma_prev: np.array) -> np.
     return ((1 - l) * a_prev @ a_prev.T + l * (1 - l ** (t - 1)) * sigma_prev) / (1 - l ** t)
 
 
-def _llik_norm(x: np.array, sigma: np.array) -> float:
+def _llik_norm(x: np.ndarray, sigma: np.ndarray) -> float:
     """Log-likelihood of observing `x` under the normal distribution N(0, `sigma`)
 
     Parameters
     ----------
-    x: np.array
+    x: np.ndarray
         the column-vector of observations
-    sigma: np.array
+    sigma: np.ndarray
         the covariance matrix of the multivariate normal distribution
 
     Returns
@@ -52,14 +53,14 @@ def _llik_norm(x: np.array, sigma: np.array) -> float:
     return -0.5 * np.log(det_sigma) - 0.5 * x.T @ inv_sigma @ x
 
 
-def _nllik_ewma(l: float, innov: np.array) -> float:
+def _nllik_ewma(l: float, innov: np.ndarray) -> float:
     """Objective function for maximising log-likelihood
 
     Parameters
     ----------
     l: float
         the parameter of the EWMA model
-    innov: np.array
+    innov: np.ndarray
         an array of innovations: rows are observations, columns are variables
 
     Returns
@@ -86,14 +87,14 @@ def _nllik_ewma(l: float, innov: np.array) -> float:
     return -llik  # the objective function is for minimisation, so negate the value to maximise log-likelihood
 
 
-def est_ewma(l0: float, innov: np.array) -> Tuple[float, float]:
+def est_ewma(l0: float, innov: np.ndarray) -> Tuple[float, float]:
     """Fit the EWMA model to the supplied innovations
 
     Parameters
     ----------
     l0: float
         the starting value of lambda
-    innov: np.array
+    innov: np.ndarray
         an array of innovations: rows are observations, columns are variables
 
     Returns
@@ -106,19 +107,19 @@ def est_ewma(l0: float, innov: np.array) -> Tuple[float, float]:
     return res.x[0], se
 
 
-def sigma_ewma(l: float, innov: np.array) -> np.array:
+def sigma_ewma(l: float, innov: np.ndarray) -> np.ndarray:
     """Use a recursive EWMA process to estimate Sigma[t]
 
     Parameters
     ----------
     l: float
         the value of lambda to use
-    innov: np.array
+    innov: np.ndarray
         an array of innovation time series: rows are observations, columns are variables
 
     Returns
     -------
-    np.array
+    np.ndarray
         an array of estimated covariance matrices at each time, size (p, p, n),
         where n is the number of observations and p is the number of variables
     """

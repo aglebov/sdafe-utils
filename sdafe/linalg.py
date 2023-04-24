@@ -1,17 +1,17 @@
 import numpy as np
 
 
-def matrix_sqrt_inv(A: np.array) -> np.array:
+def matrix_sqrt_inv(A: np.ndarray) -> np.ndarray:
     """Calculate the inverse square root of a matrix if defined
 
     Parameters
     ----------
-    A: np.array
+    A: np.ndarray
         input matrix
 
     Returns
     -------
-    np.array
+    np.ndarray
         the inverse square root matrix
 
     Notes
