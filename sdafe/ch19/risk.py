@@ -1,6 +1,48 @@
 from typing import Optional
 
+import numpy as np
+import pandas as pd
 import scipy.stats as stats
+
+
+def VaR(sample: np.ndarray | pd.DataFrame, alpha: Optional[float] = 0.05, s: Optional[float] = 1.0) -> float:
+    """Non-parametric VaR estimate
+
+    Parameters
+    ----------
+    sample: np.array | pd.DataFrame
+        the sample of return values to estimate the VaR from
+    alpha: Optional[float]
+        the confidence parameter for the VaR, e.g. 0.05 to obtain 95% VaR. Default: 0.05
+    s: Optional[float]
+        the position size. Default: 1.0
+
+    Returns
+    -------
+    float
+        the estimated value of VaR for a given confidence parameter and position size
+    """
+    return -s * np.quantile(sample, alpha)
+
+
+def ES(sample: np.ndarray | pd.DataFrame, alpha: Optional[float] = 0.05, s: Optional[float] = 1.0) -> float:
+    """Non-parametric expected shortfall estimate
+
+    Parameters
+    ----------
+    sample: np.array | pd.DataFrame
+        the sample of return values to estimate the ES from
+    alpha: Optional[float]
+        the confidence parameter for the ES, e.g. 0.05 to obtain 95% VaR. Default: 0.05
+    s: Optional[float]
+        the position size. Default: 1.0
+
+    Returns
+    -------
+    float
+        the value of expected shortfall for a given confidence parameter and position size
+    """
+    return -s * np.mean(sample[sample <= -VaR(sample, alpha)])
 
 
 def VaR_norm(
