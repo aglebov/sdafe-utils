@@ -3,6 +3,7 @@ from typing import Optional
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import scipy.stats as stats
 
 
 def abs_diff_heatmap(df1: pd.DataFrame, df2: pd.DataFrame, ax: Optional[plt.Axes] = None):
@@ -35,3 +36,14 @@ def abs_diff_heatmap(df1: pd.DataFrame, df2: pd.DataFrame, ax: Optional[plt.Axes
     for i in range(len(df1.index)):
         for j in range(len(df1.columns)):
             ax.text(j, i, f'{abs_diff.iloc[i, j]:.2f}', ha="center", va="center", color="w")
+
+
+def plot_qq_norm(ax, vals):
+    """QQ plot with a regression line through 25% and 75% quantiles"""
+    qs = np.array([0.25, 0.75])
+
+    stats.probplot(vals, dist="norm", plot=ax, fit=False)
+
+    # draw a regression line through 0.25 and 0.75 quantiles
+    coord = lambda q: (stats.norm.ppf(q), np.quantile(vals, q))
+    ax.axline(coord(qs[0]), coord(qs[1]), color='red')
