@@ -54,6 +54,8 @@ def plot_qq_norm(ax, vals) -> None:
 
 def plot_kde(ax, vals, label='KDE', num_points=100) -> None:
     """Plot a Gaussian kernel density estimate"""
+    if isinstance(vals, pd.Series):
+        vals = vals.values
     kde = KernelDensity(bandwidth=silverman_bw(vals), kernel='gaussian').fit(vals.reshape(-1, 1))
     xs = np.linspace(np.min(vals), np.max(vals), num_points)
     ys = np.exp(kde.score_samples(xs.reshape(-1, 1)))
