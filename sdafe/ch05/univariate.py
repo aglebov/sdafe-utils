@@ -6,6 +6,26 @@ from scipy.optimize import minimize, OptimizeResult
 import scipy.stats as stats
 
 
+def silverman_bw(vals: Union[np.array, pd.Series]) -> float:
+    """Select bandwidth for a kernel density estimator using Silverman's rule of thumb
+
+    Parameters
+    ----------
+    data: Union[np.array, pd.Series]
+        input data
+
+    Returns
+    -------
+    float
+        the selected bandwidth value
+
+    Notes
+    -----
+    See https://www.rdocumentation.org/packages/stats/versions/3.6.2/topics/bandwidth
+    """
+    return 0.9 * min(np.std(vals, ddof=1), stats.iqr(vals) / 1.34) * len(vals) ** (-0.2)
+
+
 def loglik_t(x: Union[np.array, pd.Series], loc: float, scale: float, df: int) -> float:
     """Log-likelihood of a sample under t-distribution
 
