@@ -4,6 +4,9 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.stats as stats
+from sklearn.neighbors import KernelDensity
+
+from sdafe.ch05.univariate import silverman_bw
 
 
 def abs_diff_heatmap(df1: pd.DataFrame, df2: pd.DataFrame, ax: Optional[plt.Axes] = None):
@@ -38,8 +41,8 @@ def abs_diff_heatmap(df1: pd.DataFrame, df2: pd.DataFrame, ax: Optional[plt.Axes
             ax.text(j, i, f'{abs_diff.iloc[i, j]:.2f}', ha="center", va="center", color="w")
 
 
-def plot_qq_norm(ax, vals):
-    """QQ plot with a regression line through 25% and 75% quantiles"""
+def plot_qq_norm(ax, vals) -> None:
+    """QQ plot with a regression line through the 25% and 75% quantiles"""
     qs = np.array([0.25, 0.75])
 
     stats.probplot(vals, dist="norm", plot=ax, fit=False)
@@ -47,3 +50,11 @@ def plot_qq_norm(ax, vals):
     # draw a regression line through 0.25 and 0.75 quantiles
     coord = lambda q: (stats.norm.ppf(q), np.quantile(vals, q))
     ax.axline(coord(qs[0]), coord(qs[1]), color='red')
+
+
+def plot_kde(ax, vals, label='KDE', num_points=100) -> None:
+    """Plot a Gaussian kernel density estimate"""
+    kde = KernelDensity(bandwidth=silverman_bw(vals), kernel='gaussian').fit(vals.reshape(-1, 1))
+    xs = np.linspace(np.min(vals), np.max(vals), num_points)
+    ys = np.exp(kde.score_samples(xs.reshape(-1, 1)))
+    ax.plot(xs, ys, label=label)
