@@ -102,9 +102,9 @@ def ES_norm(
 
 
 def VaR_t(
+        df: int,
         loc: float,
         scale: float,
-        df: int,
         alpha: Optional[float] = 0.05,
         s: Optional[float] = 1.0,
 ) -> float:
@@ -112,12 +112,12 @@ def VaR_t(
 
     Parameters
     ----------
+    df: int
+        the degrees of freedom parameter of the t-distribution
     loc: float
         the location parameter of the t-distribution
     scale: float
         the scale parameter of the t-distribution
-    df: int
-        the degrees of freedom parameter of the t-distribution
     alpha: float
         the confidence parameter for the VaR, e.g. 0.05 to obtain 95% VaR. Default: 0.05
     s: float
@@ -132,9 +132,9 @@ def VaR_t(
 
 
 def ES_t(
+        df: int,
         loc: float,
         scale: float,
-        df: int,
         alpha: Optional[float] = 0.05,
         s: Optional[float] = 1.0
 ) -> float:
@@ -142,12 +142,12 @@ def ES_t(
 
     Parameters
     ----------
+    df: int
+        the degrees of freedom parameter of the t-distribution
     loc: float
         the location parameter of the t-distribution
     scale: float
         the scale parameter of the t-distribution
-    df: int
-        the degrees of freedom parameter of the t-distribution
     alpha: float
         the confidence parameter for the expected shortfall,
         e.g. 0.05 to obtain 95% ES. Default: 0.05
