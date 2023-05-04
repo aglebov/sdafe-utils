@@ -4,9 +4,6 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import scipy.stats as stats
-from sklearn.neighbors import KernelDensity
-
-from sdafe.ch05.univariate import silverman_bw
 
 
 def abs_diff_heatmap(df1: pd.DataFrame, df2: pd.DataFrame, ax: Optional[plt.Axes] = None):
@@ -79,25 +76,3 @@ def plot_qq_t(ax: plt.Axes, sample: np.ndarray | pd.Series, df: int) -> None:
     # draw a regression line through 0.25 and 0.75 quantiles
     coord = lambda q: (stats.t.ppf(q, df=df), np.quantile(sample, q))
     ax.axline(coord(qs[0]), coord(qs[1]), color='red')
-
-
-def plot_kde(ax: plt.Axes, vals: np.ndarray | pd.Series, label: str = 'KDE', num_points: int = 100) -> None:
-    """Plot a Gaussian kernel density estimate
-
-    Parameters
-    ----------
-    ax: plt.Axes
-        the subplot to use
-    vals: np.ndarray | pd.Series
-        the sample to plot
-    label: str
-        the label for plotted line. Default: 'KDE'
-    num_points: int
-        the number of points to use for plotting the KDE. Default: 100
-    """
-    if isinstance(vals, pd.Series):
-        vals = vals.values
-    kde = KernelDensity(bandwidth=silverman_bw(vals), kernel='gaussian').fit(vals.reshape(-1, 1))
-    xs = np.linspace(np.min(vals), np.max(vals), num_points)
-    ys = np.exp(kde.score_samples(xs.reshape(-1, 1)))
-    ax.plot(xs, ys, label=label)
