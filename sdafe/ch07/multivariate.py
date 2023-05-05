@@ -25,7 +25,7 @@ def loglik_mvt(Y: pd.DataFrame, par: np.ndarray) -> float:
     Notes
     -----
     The parameters are passed as a one-dimensional array: first the means,
-    then the elements of the upper-triangular matrix A, where A.T @ T ~ Cov(Y),
+    then the elements of the upper-triangular matrix A, where A.T @ A ~ Cov(Y),
     followed by the degrees of freedom.
     """
     n = Y.shape[1]  # the number of variables
@@ -59,7 +59,7 @@ def fit_mvt(
     mu_bounds: Tuple[float, float]
         the lower and upper bounds for means
     a_bounds: Tuple[float, float]
-        the lower and upper bounds for values in the matrix A, where A.T @ T ~ Cov(Y)
+        the lower and upper bounds for values in the matrix A, where A.T @ A ~ Cov(Y)
     df_bounds: Tuple[float, float]
         the lower and upper bounds for the degree of freedom parameter
 
