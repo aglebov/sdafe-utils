@@ -1,4 +1,9 @@
+from typing import Sequence
+
+import arviz
+import matplotlib.figure
 import numpy as np
+import pandas as pd
 import scipy.stats as stats
 from scipy.linalg import solve_triangular
 
@@ -14,7 +19,7 @@ def max_eigenv_sym(A: np.ndarray, B: np.ndarray) -> float:
 
 def gelman_diag(
         x: np.ndarray, confidence: float = 0.95
-) -> tuple[np.ndarray, np.ndarray, float] | tuple[np.ndarray, np.ndarray]:
+) -> tuple[np.ndarray, float] | np.ndarray:
     """Estimate potential scale reduction factor based on the results of an MCMC simulation
 
     This is a direct translation to Python of the `gelman.diag` function from the `coda` package in R:
@@ -31,9 +36,10 @@ def gelman_diag(
 
     Returns
     -------
-    tuple[np.ndarray, np.ndarray, np.float] | tuple[np.ndarray, np.ndarray]
-        a tuple containing estimates and upper bounds for potential scale reduction factor for each variable.
-        If there is more than one variable, then additionally returns a multivariate psrf.
+    tuple[np.ndarray, np.float] | np.ndarray
+        an array containing point estimates (first column) and upper bounds (second column)
+        for potential scale reduction factor for each variable. If there is more than one variable,
+        then a tuple contain the array of estimates and the multivariate psrf value.
     """
     n_iter, n_var, n_chain = x.shape
 
@@ -76,9 +82,84 @@ def gelman_diag(
     R2_est = R2_fixed + R2_random
     R2_upper = R2_fixed + stats.f.ppf((1 + confidence) / 2, B_df, W_df) * R2_random
 
-    R2 = np.sqrt(np.vstack([R2_est, R2_upper]) * df_adj)
+    R2 = np.sqrt(np.vstack([R2_est, R2_upper]) * df_adj).T
 
     if n_var > 1:
-        return R2[0, :], R2[1, :], mpsrf()
+        return R2, mpsrf()
     else:
-        return R2[0, :], R2[1, :]
+        return R2
+
+
+def gelman_diag_arviz(data: arviz.InferenceData, var_names: Sequence[str]) -> tuple[pd.DataFrame, float]:
+    """Summary of Gelman diagnostics for an `arviz.InferenceData` instance
+
+    Parameters
+    ----------
+    data: arviz.InferenceData
+        the results of a simulation
+    var_names: Sequence[str]
+        a sequence of variable names present in the provided inference data for which to calculate diagnostics
+
+    Returns
+    -------
+    tuple[pd.DataFrame, float]
+        a tuple with two elements: a dataframe containing point estimates of the potential scale reduction factor
+        and the upper bounds of the confidence intervals, and the multivariate potential scale reduction factor
+        value
+    """
+    psrf, mpsrf = gelman_diag(np.stack([data.posterior[v].T for v in var_names], axis=1))
+    return pd.DataFrame(psrf, columns=['Point est.', 'Upper C.I.'], index=var_names), mpsrf
+
+
+def gelman_plot(
+        fig: matplotlib.figure.Figure,
+        data: arviz.InferenceData,
+        var_names: Sequence[str],
+        confidence: float = 0.95,
+        max_bins: int = 50,
+        guideline_level: float | None = None
+) -> matplotlib.figure.Figure:
+    """Plot of the evolution of the potential scale reduction factor as the number of iterations increases
+
+    This is done by recalculating the shrink factor for an expanding window of draws taken from the results
+    of the simulation.
+
+    Parameters
+    ----------
+    fig: matplotlib.figure.Figure
+        the figure to draw on
+    data: arviz.InferenceData
+        the results of a simulation
+    var_names: Sequence[str]
+        a sequence of variable names present in the provided inference data for which to calculate diagnostics
+    confidence: float
+        the confidence level for the upper bound estimate. Default: 0.95
+    max_bins: int
+        the number of intervals to use when evaluating the shrink factors. Default: 50
+    guideline_level: float
+        if provided, a horizontal line is plotted to mark the level of the shrink factor that is considered acceptable
+
+    Returns
+    -------
+    matplotlib.figure.Figure
+        the figure object that was passed to this function
+    """
+    x = np.stack([data.posterior[v].T for v in var_names], axis=1)
+    n_iter = x.shape[0]
+    n_bin = min(n_iter, max_bins)
+    draws = (np.arange(n_bin) + 1) * (n_iter // n_bin)
+    rhat = np.stack([gelman_diag(x[:d, :, :])[0] for d in draws], axis=-1)
+
+    axs = fig.axes
+    for i, var in enumerate(var_names):
+        axs[i].plot(draws, rhat[i][0], label='median')
+        axs[i].plot(draws, rhat[i][1], '--', label=f'{(1 + confidence)*50}%')
+        axs[i].axhline(1.0, color='black', linewidth=0.5)
+        if guideline_level is not None:
+            axs[i].axhline(guideline_level, color='red', linestyle='--', linewidth=0.5)
+        axs[i].set_xlabel('draw')
+        axs[i].set_ylabel('$\\hat{R}$')
+        axs[i].set_title(var)
+        axs[i].legend()
+
+    return fig
