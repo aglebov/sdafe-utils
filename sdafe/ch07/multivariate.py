@@ -7,7 +7,7 @@ import scipy.stats as stats
 
 
 def loglik_mvt(Y: pd.DataFrame, par: np.ndarray) -> float:
-    """The log-likelihood of the multivariate normal distribution
+    """The log-likelihood of the multivariate t-distribution
 
     Parameters
     ----------
