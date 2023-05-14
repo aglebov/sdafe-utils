@@ -2,9 +2,14 @@
 from typing import Any
 
 import numpy as np
+import pandas as pd
 
 import rpy2.rlike.container as rlc
 import rpy2.robjects as robjects
+from rpy2.robjects import pandas2ri, numpy2ri, default_converter
+
+
+np_cv_rules = default_converter + numpy2ri.converter + pandas2ri.converter
 
 
 def tl(d: Any = None, **kwargs):
@@ -70,3 +75,8 @@ def el(l: rlc.TaggedList, name: str) -> Any:
         the value from the list corresponding to the given tag
     """
     return l[l.names.index(name)]
+
+
+def py2rpy(obj: pd.DataFrame | np.ndarray):
+    with np_cv_rules.context():
+        return np_cv_rules.py2rpy(obj)
