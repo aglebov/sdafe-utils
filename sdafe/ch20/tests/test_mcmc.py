@@ -7,7 +7,9 @@ from sdafe.ch20.mcmc import gelman_diag
 
 @pytest.fixture
 def gelman_diag_data():
-    return np.stack([pd.read_csv(f'data/x{i}.csv', index_col=0).values for i in range(3)], axis=-1)
+    return np.stack([
+        pd.read_csv(f'data/x{i}.csv', index_col=0).values for i in range(3)
+    ], axis=-1)
 
 
 def test_gelman_diag(gelman_diag_data):

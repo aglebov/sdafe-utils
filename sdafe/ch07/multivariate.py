@@ -20,7 +20,8 @@ def loglik_mvt(Y: pd.DataFrame, par: np.ndarray) -> float:
     Returns
     -------
     float
-        the log-likelihood of the multivariate t-distribution evaluated at the given point
+        the log-likelihood of the multivariate t-distribution evaluated
+        at the given point
 
 
     Notes
@@ -100,24 +101,29 @@ def cov_trob(
 ) -> dict[str, Any]:
     """Fits the parameters of a t-distribution to the provided data
 
-    This implementation is a translation of the cov.trob function implementation in the MASS package in R
-    (https://github.com/cran/MASS/blob/master/R/cov.trob.R) by Brian Ripley.
-    The original R implementation is based on the algorithm in J. T. Kent, D. E. Tyler and Y. Vardi (1994)
-    A curious likelihood identity for the multivariate t-distribution. Communications in Statistics—Simulation
-    and Computation 23, 441–453.
+    This implementation is a translation of the cov.trob function implementation in
+    the MASS package in R (https://github.com/cran/MASS/blob/master/R/cov.trob.R)
+    by Brian Ripley.
+    The original R implementation is based on the algorithm in J. T. Kent, D. E. Tyler
+    and Y. Vardi (1994) A curious likelihood identity for the multivariate
+    t-distribution. Communications in Statistics—Simulation and Computation 23, 441–453.
 
     Parameters
     ----------
     x: np.array
-        An array of observations, with rows representing individual observations, and columns the observed variables
+        An array of observations, with rows representing individual observations,
+        and columns the observed variables
     wt: Optional[np.array]
-        The weights of the observations (rows) in x. By defaults, all observations are taken to have equal weight.
+        The weights of the observations (rows) in x. By defaults, all observations
+        are taken to have equal weight.
     cor: Optional[bool]
-        Whether to return the correlation matrix calculated from the covariance matrix. False by default.
+        Whether to return the correlation matrix calculated from the covariance matrix.
+        False by default.
     center: Union[bool, np.array]
-        If a boolean value is provided, indicates whether to estimate the location parameter for each variable (True)
-        or assume that the location is zero for each. If a number vector is provided, use it as the location and do not
-        estimate it.
+        If a boolean value is provided, indicates whether to estimate
+        the location parameter for each variable (True) or assume that the location
+        is zero for each. If a number vector is provided, use it as the location and
+        do not estimate it.
     nu: float
         The number of degrees of freedom of the fitted t-distribution. Default: 5
     maxit: int
@@ -162,7 +168,8 @@ def cov_trob(
 
     wt = wt.reshape(-1, 1)  # make sure the weights are a column-vector
 
-    loc = np.sum(x * wt, axis=0) / np.sum(wt)  # the initial estimate of the location parameters for each variable
+    # the initial estimate of the location parameters for each variable
+    loc = np.sum(x * wt, axis=0) / np.sum(wt)
 
     if type(center) is np.array:
         if len(center) != p:
@@ -186,13 +193,15 @@ def cov_trob(
         if use_loc:
             loc = np.sum(x * w, axis=0) / np.sum(w)
 
-        # the convergence criterion: the changes in weights are below the chosen tolerance threshold
+        # the convergence criterion: the changes in weights are below
+        # the chosen tolerance threshold
         if np.all(np.abs(w - w0) < tol):
             break
 
         endit = i + 1
 
-    if endit == maxit or np.abs(np.mean(w) - np.mean(wt)) > tol or np.abs(np.mean(Q * w) / p - 1) > tol:
+    if (endit == maxit or np.abs(np.mean(w) - np.mean(wt)) > tol
+            or np.abs(np.mean(Q * w) / p - 1) > tol):
         warnings.warn('Probable convergence failure')
 
     Xw = X * np.sqrt(w)

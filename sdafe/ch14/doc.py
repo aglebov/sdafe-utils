@@ -35,13 +35,16 @@ def doc_test(A: np.ndarray, m: int) -> pd.DataFrame:
     res.append((q, df, p))
 
     for j in range(1, m + 1):
-        # corrcoef gives us correlation between all combinations of variables in x and y,
-        # but we only need the correlations of variables in x with variables in y,
-        # hence select a submatrix
+        # corrcoef gives us correlation between all combinations of variables
+        # in x and y, but we only need the correlations of variables in x
+        # with variables in y, hence select a submatrix
         ccf = np.corrcoef(A[j:, :], A[:-j, :], rowvar=False)[:k, k:]
-        q += n * (n + 2) * np.sum((ccf - np.diag(np.diag(ccf))) ** 2) / (n - j)  # zero the diagonal elements
+        # zero the diagonal elements
+        q += n * (n + 2) * np.sum((ccf - np.diag(np.diag(ccf))) ** 2) / (n - j)
         df += k * (k - 1)  # excluding the diagonal elements
         p = 1 - stats.chi2.cdf(q, df=df)
         res.append((q, df, p))
 
-    return pd.DataFrame(res, columns=['Q(m)', 'd.f.', 'p-value'], index=pd.Index(range(m + 1), name='m'))
+    return pd.DataFrame(
+        res, columns=['Q(m)', 'd.f.', 'p-value'], index=pd.Index(range(m + 1), name='m')
+    )

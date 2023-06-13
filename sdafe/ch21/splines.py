@@ -49,7 +49,9 @@ def plot_gam(
         last_param_idx = int(el(smooth, 'last.para')[0])
         p = el(fit, 'coefficients')[first_param_idx - 1:last_param_idx]
 
-        Vp_i = Vp[first_param_idx - 1:last_param_idx, first_param_idx - 1:last_param_idx]
+        Vp_i = Vp[
+               first_param_idx - 1:last_param_idx, first_param_idx - 1:last_param_idx
+        ]
         se = np.sqrt(np.maximum(0, np.sum(X @ Vp_i * X, axis=1)))
 
         y = X @ p

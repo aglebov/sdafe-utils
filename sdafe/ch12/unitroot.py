@@ -7,7 +7,8 @@ from statsmodels.tsa.stattools import adfuller
 
 
 def adf_test(sample: np.ndarray | pd.Series):
-    """Perform the augmented Dickey-Fuller test using the default from the R's adf.test function
+    """Perform the augmented Dickey-Fuller test using the default from R's
+    adf.test function
 
     Parameters
     ----------

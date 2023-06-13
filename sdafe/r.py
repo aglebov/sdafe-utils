@@ -59,12 +59,12 @@ def fv(*vs):
     return robjects.FloatVector(vs)
 
 
-def el(l: rlc.TaggedList, name: str) -> Any:
+def el(lst: rlc.TaggedList, name: str) -> Any:
     """Extract an element from a `rpy2.rlike.container.TaggedList`
 
     Parameters
     ----------
-    l: rlc.TaggedList
+    lst: rlc.TaggedList
         a TaggedList of values
     name: str
         the name of the element to extract
@@ -74,7 +74,7 @@ def el(l: rlc.TaggedList, name: str) -> Any:
     Any
         the value from the list corresponding to the given tag
     """
-    return l[l.names.index(name)]
+    return lst[lst.names.index(name)]
 
 
 def py2rpy(obj: pd.DataFrame | np.ndarray):

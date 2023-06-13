@@ -6,7 +6,9 @@ import matplotlib.pyplot as plt
 import scipy.stats as stats
 
 
-def abs_diff_heatmap(df1: pd.DataFrame, df2: pd.DataFrame, ax: Optional[plt.Axes] = None):
+def abs_diff_heatmap(
+        df1: pd.DataFrame, df2: pd.DataFrame, ax: Optional[plt.Axes] = None
+):
     """Plot heatmap of element-wise absolute differences between two dataframes
 
     Parameters
@@ -35,7 +37,9 @@ def abs_diff_heatmap(df1: pd.DataFrame, df2: pd.DataFrame, ax: Optional[plt.Axes
 
     for i in range(len(df1.index)):
         for j in range(len(df1.columns)):
-            ax.text(j, i, f'{abs_diff.iloc[i, j]:.2f}', ha="center", va="center", color="w")
+            ax.text(
+                j, i, f'{abs_diff.iloc[i, j]:.2f}', ha="center", va="center", color="w"
+            )
 
 
 def plot_qq_norm(ax: plt.Axes, sample: np.ndarray | pd.Series) -> None:
@@ -53,7 +57,8 @@ def plot_qq_norm(ax: plt.Axes, sample: np.ndarray | pd.Series) -> None:
     stats.probplot(sample, dist="norm", plot=ax, fit=False)
 
     # draw a regression line through 0.25 and 0.75 quantiles
-    coord = lambda q: (stats.norm.ppf(q), np.quantile(sample, q))
+    def coord(q):
+        return stats.norm.ppf(q), np.quantile(sample, q)
     ax.axline(coord(qs[0]), coord(qs[1]), color='red')
 
 
@@ -74,5 +79,6 @@ def plot_qq_t(ax: plt.Axes, sample: np.ndarray | pd.Series, df: int) -> None:
     stats.probplot(sample, dist="t", plot=ax, fit=False, sparams=(df,))
 
     # draw a regression line through 0.25 and 0.75 quantiles
-    coord = lambda q: (stats.t.ppf(q, df=df), np.quantile(sample, q))
+    def coord(q):
+        return stats.t.ppf(q, df=df), np.quantile(sample, q)
     ax.axline(coord(qs[0]), coord(qs[1]), color='red')

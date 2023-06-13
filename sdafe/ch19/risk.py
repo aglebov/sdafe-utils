@@ -5,7 +5,11 @@ import pandas as pd
 import scipy.stats as stats
 
 
-def VaR(sample: np.ndarray | pd.DataFrame, alpha: Optional[float] = 0.05, s: Optional[float] = 1.0) -> float:
+def VaR(
+        sample: np.ndarray | pd.DataFrame,
+        alpha: Optional[float] = 0.05,
+        s: Optional[float] = 1.0
+) -> float:
     """Non-parametric VaR estimate
 
     Parameters
@@ -25,7 +29,11 @@ def VaR(sample: np.ndarray | pd.DataFrame, alpha: Optional[float] = 0.05, s: Opt
     return -s * np.quantile(sample, alpha)
 
 
-def ES(sample: np.ndarray | pd.DataFrame, alpha: Optional[float] = 0.05, s: Optional[float] = 1.0) -> float:
+def ES(
+        sample: np.ndarray | pd.DataFrame,
+        alpha: Optional[float] = 0.05,
+        s: Optional[float] = 1.0
+) -> float:
     """Non-parametric expected shortfall estimate
 
     Parameters
@@ -40,7 +48,8 @@ def ES(sample: np.ndarray | pd.DataFrame, alpha: Optional[float] = 0.05, s: Opti
     Returns
     -------
     float
-        the value of expected shortfall for a given confidence parameter and position size
+        the value of expected shortfall for a given confidence parameter and
+        position size
     """
     return -s * np.mean(sample[sample <= -VaR(sample, alpha)])
 
@@ -95,7 +104,8 @@ def ES_norm(
     Returns
     -------
     float
-        the value of expected shortfall for a given confidence parameter and position size
+        the value of expected shortfall for a given confidence parameter and
+        position size
     """
     p = stats.norm.pdf(stats.norm.ppf(alpha))
     return s * (-loc + scale * p / alpha)
@@ -157,7 +167,8 @@ def ES_t(
     Returns
     -------
     float
-        the value of expected shortfall for a given confidence parameter and position size
+        the value of expected shortfall for a given confidence parameter and
+        position size
     """
     q = stats.t.ppf(alpha, df=df)
     p = stats.t.pdf(q, df=df)

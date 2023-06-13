@@ -52,7 +52,8 @@ def bootstrap_corr(
     for i in range(n_boot):
         corrs[i] = np.corrcoef(data[rng.choice(n, size=n), :], rowvar=False)
     # use basic bootstrap interval
-    confints = 2 * estimate - np.quantile(corrs, [(1 + alpha) / 2, (1 - alpha) / 2], axis=0)
+    confints = (2 * estimate
+                - np.quantile(corrs, [(1 + alpha) / 2, (1 - alpha) / 2], axis=0))
 
     def to_df(a):
         return pd.DataFrame(a, index=var_names, columns=var_names)
@@ -87,14 +88,30 @@ def estimate_corr(data: pd.DataFrame, alpha: float = 0.95) -> pd.DataFrame:
         for j in range(i + 1, data.shape[1]):
             res = stats.pearsonr(data.iloc[:, i], data.iloc[:, j])
             confint = res.confidence_interval(alpha)
-            temp.append([data.columns[i], data.columns[j], res.statistic, confint[0], confint[1], res.pvalue])
+            temp.append([
+                data.columns[i],
+                data.columns[j],
+                res.statistic,
+                confint[0],
+                confint[1],
+                res.pvalue,
+            ])
     return pd.DataFrame(
         temp,
-        columns=['Variable1', 'Variable2', 'Correlation', 'Lower bound', 'Upper bound', 'p-value']
+        columns=[
+            'Variable1',
+            'Variable2',
+            'Correlation',
+            'Lower bound',
+            'Upper bound',
+            'p-value',
+        ]
     )
 
 
-def sufficiency_test(fa: FactorAnalyzer, nobs: int, nvar: int) -> Tuple[float, int, float]:
+def sufficiency_test(
+        fa: FactorAnalyzer, nobs: int, nvar: int
+) -> Tuple[float, int, float]:
     """Sufficiency test as reported by the factanal function in R
 
     The null hypothesis of the test is that the selected number of factors
@@ -112,7 +129,8 @@ def sufficiency_test(fa: FactorAnalyzer, nobs: int, nvar: int) -> Tuple[float, i
     Returns
     -------
     Tuple[float, int, float]
-        a tuple containing the test statistic, the number of degrees of freedom and the p-value
+        a tuple containing the test statistic, the number of degrees of freedom and
+        the p-value
     """
     df = ((nvar - fa.n_factors) ** 2 - nvar - fa.n_factors) // 2
     obj = fa._fit_ml_objective(fa.get_uniquenesses(), fa.corr_, fa.n_factors)
@@ -142,4 +160,6 @@ def evaluate_factors(data: pd.DataFrame) -> pd.DataFrame:
         fa = FactorAnalyzer(n_factors=n_factors, rotation=None, method='ml')
         fa.fit(data)
         temp.append([n_factors, *sufficiency_test(fa, *data.shape)])
-    return pd.DataFrame(temp, columns=['Factors', 'Statistic', 'df', 'p-value']).set_index('Factors')
+    return pd.DataFrame(
+        temp, columns=['Factors', 'Statistic', 'df', 'p-value']
+    ).set_index('Factors')

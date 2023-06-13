@@ -1,5 +1,3 @@
-from typing import Union
-
 import numpy as np
 import pandas as pd
 
@@ -7,8 +5,14 @@ import pandas as pd
 class PCAResult:
     """Summary of results of a PCA"""
 
-    def __init__(self, n_obs: int, center: np.ndarray, sdev: np.ndarray, loadings: np.ndarray,
-                 scores: np.ndarray):
+    def __init__(
+            self,
+            n_obs: int,
+            center: np.ndarray,
+            sdev: np.ndarray,
+            loadings: np.ndarray,
+            scores: np.ndarray,
+    ):
         """Initialise PCA results
 
         Parameters
@@ -40,7 +44,9 @@ class PCAResult:
             var_proportion,
             np.cumsum(var_proportion),
         ], columns=[f'Comp.{i + 1}' for i in range(len(self.sdev))],
-            index=['Standard deviation', 'Proportion of Variance', 'Cumulative Proportion'])
+            index=[
+                'Standard deviation', 'Proportion of Variance', 'Cumulative Proportion'
+            ])
 
 
 def princomp(X: np.ndarray | pd.DataFrame, cor: bool = False, compat: bool = True):

@@ -11,7 +11,8 @@ def bootstrap(
 ) -> np.ndarray:
     """Boostrap an estimate from the provided sample using the resampling function
 
-    Using a resampling function offers an ability to handler model-free and model-based bootstrap uniformly.
+    Using a resampling function offers an ability to handler model-free and
+    model-based bootstrap uniformly.
 
     Parameters
     ----------
@@ -31,8 +32,8 @@ def bootstrap(
 
     Notes
     -----
-    See `scipy.stats.bootstrap` for a library implementation, which does not provide the ability to choose
-    a custom resampling function.
+    See `scipy.stats.bootstrap` for a library implementation, which does not provide
+    the ability to choose a custom resampling function.
     """
     return np.fromiter(
         (estimator_fun(resample_fun(sample)) for _ in range(n_resamples)),

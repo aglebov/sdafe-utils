@@ -8,12 +8,14 @@ import numpy as np
 from scipy.optimize import minimize
 
 
-def _sigma_step(l: float, t: int, a_prev: np.ndarray, sigma_prev: np.ndarray) -> np.ndarray:
+def _sigma_step(
+        lam: float, t: int, a_prev: np.ndarray, sigma_prev: np.ndarray
+) -> np.ndarray:
     """The recursive formula for sigma
 
     Parameters
     ----------
-    l: float
+    lam: float
         the value of lambda to use
     t: int
         zero-based time index
@@ -29,7 +31,9 @@ def _sigma_step(l: float, t: int, a_prev: np.ndarray, sigma_prev: np.ndarray) ->
     """
     assert sigma_prev.shape[0] == sigma_prev.shape[1]
     assert a_prev.shape == (sigma_prev.shape[0], 1)
-    return ((1 - l) * a_prev @ a_prev.T + l * (1 - l ** (t - 1)) * sigma_prev) / (1 - l ** t)
+    return (
+            (1 - lam) * a_prev @ a_prev.T + lam * (1 - lam ** (t - 1)) * sigma_prev
+    ) / (1 - lam ** t)
 
 
 def _llik_norm(x: np.ndarray, sigma: np.ndarray) -> float:
@@ -53,12 +57,12 @@ def _llik_norm(x: np.ndarray, sigma: np.ndarray) -> float:
     return -0.5 * np.log(det_sigma) - 0.5 * x.T @ inv_sigma @ x
 
 
-def _nllik_ewma(l: float, innov: np.ndarray) -> float:
+def _nllik_ewma(lam: float, innov: np.ndarray) -> float:
     """Objective function for maximising log-likelihood
 
     Parameters
     ----------
-    l: float
+    lam: float
         the parameter of the EWMA model
     innov: np.ndarray
         an array of innovations: rows are observations, columns are variables
@@ -81,10 +85,12 @@ def _nllik_ewma(l: float, innov: np.ndarray) -> float:
     for t in range(2, n):
         atm1 = at  # previous observation
         at = innov[t, :, np.newaxis]  # current observation
-        sigma_hat = _sigma_step(l, t, atm1, sigma_hat)  # evolve sigma
+        sigma_hat = _sigma_step(lam, t, atm1, sigma_hat)  # evolve sigma
         llik += _llik_norm(at, sigma_hat)
 
-    return -llik  # the objective function is for minimisation, so negate the value to maximise log-likelihood
+    # the objective function is for minimisation, therefore negate the value
+    # to maximise log-likelihood
+    return -llik
 
 
 def est_ewma(l0: float, innov: np.ndarray) -> Tuple[float, float]:
@@ -103,16 +109,17 @@ def est_ewma(l0: float, innov: np.ndarray) -> Tuple[float, float]:
         the estimated values of lambda and its squared error
     """
     res = minimize(_nllik_ewma, l0, innov, bounds=[(0.001, 0.999)])
-    se = np.sqrt(res.hess_inv.todense()[0, 0])  # standard error estimate based on Fisher information
+    # standard error estimate based on Fisher information
+    se = np.sqrt(res.hess_inv.todense()[0, 0])
     return res.x[0], se
 
 
-def sigma_ewma(l: float, innov: np.ndarray) -> np.ndarray:
+def sigma_ewma(lam: float, innov: np.ndarray) -> np.ndarray:
     """Use a recursive EWMA process to estimate Sigma[t]
 
     Parameters
     ----------
-    l: float
+    lam: float
         the value of lambda to use
     innov: np.ndarray
         an array of innovation time series: rows are observations, columns are variables
@@ -126,8 +133,9 @@ def sigma_ewma(l: float, innov: np.ndarray) -> np.ndarray:
     n, d = innov.shape  # number of observations and variables
     sigma_hat = np.cov(innov, rowvar=False, ddof=1)  # marginal covariance matrix
     sigma_t = np.zeros((d, d, n))  # result matrix to be populated
-    sigma_t[:, :, 0:2] = sigma_hat[:, :, np.newaxis]  # initialise the first two values for subsequent recursion
+    # initialise the first two values for subsequent recursion
+    sigma_t[:, :, 0:2] = sigma_hat[:, :, np.newaxis]
     for t in range(2, n):
         atm1 = innov[t - 1, :, np.newaxis]  # innovations at time t-1
-        sigma_t[:, :, t] = _sigma_step(l, t, atm1, sigma_t[:, :, t - 1])
+        sigma_t[:, :, t] = _sigma_step(lam, t, atm1, sigma_t[:, :, t - 1])
     return sigma_t

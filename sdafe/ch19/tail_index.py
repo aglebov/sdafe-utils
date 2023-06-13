@@ -14,7 +14,8 @@ def hill_curve(vals: np.ndarray) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     Returns
     -------
     Tuple[np.ndarray, np.ndarray, np.ndarray]
-        a tuple of three arrays: the values of `c`, `n(c)` and `a(c)` in Eq. (19.32) in SDAFE
+        a tuple of three arrays: the values of `c`, `n(c)` and `a(c)` in Eq. (19.32)
+        in SDAFE2
     """
     vals = np.sort(vals)
     n_neg = np.sum(vals < 0)
@@ -38,16 +39,19 @@ def hill_curve2(
     vals: np.ndarray
         the input sample
     lower_q: float
-        the quantile of the sample to use as the smallest threshold value. Default: 0.025
+        the quantile of the sample to use as the smallest threshold value.
+        Default: 0.025
     upper_q: float
-        the quantile of the sample to use as the largest threshold value. Default: 0.25
+        the quantile of the sample to use as the largest threshold value.
+        Default: 0.25
     npoints: int
         the number of threshold values to use
 
     Returns
     -------
     Tuple[np.ndarray, np.ndarray, np.ndarray]
-        a tuple of three arrays: the values of `c`, `n(c)` and `a(c)` in Eq. (19.32) in SDAFE
+        a tuple of three arrays: the values of `c`, `n(c)` and `a(c)` in Eq. (19.32)
+         in SDAFE2
     """
     n_tail = np.sum(vals <= np.quantile(vals, upper_q))
     c = np.linspace(*np.quantile(vals, [lower_q, upper_q]), npoints)

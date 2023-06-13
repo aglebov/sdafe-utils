@@ -5,8 +5,10 @@ import scipy.optimize
 from statsmodels.tools.numdiff import approx_hess1
 
 
-def mle_se(x: Any, loglik_f: Callable[[Any], float], epsilon: Optional[float] = 1e-6) -> np.ndarray:
-    """Calculate the standard errors for MLE parameter estimates using Fisher information
+def mle_se(
+        x: Any, loglik_f: Callable[[Any], float], epsilon: Optional[float] = 1e-6
+) -> np.ndarray:
+    """Calculate standard errors for MLE parameter estimates using Fisher information
 
     Parameters
     ----------

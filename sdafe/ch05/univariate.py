@@ -4,9 +4,11 @@ from scipy.special import gamma, beta
 
 
 def _dged(x: float, nu: float = 2.0) -> float:
-    """Density function of a generalised error distribution, as defined in section 5.6 of SDAFE
+    """Density function of a generalised error distribution, as defined in section 5.6
+    of SDAFE2
 
-    With the default shape parameter of 2.0, this becomes the standard normal distribution.
+    With the default shape parameter of 2.0, this becomes the standard normal
+    distribution.
 
     Parameters
     ----------
@@ -28,7 +30,8 @@ def _dged(x: float, nu: float = 2.0) -> float:
 def dged(x: float, loc: float = 0.0, scale: float = 1.0, nu: float = 2.0) -> float:
     """Density function of a generalised error distribution with location and scale
 
-    With the default shape parameter of 2.0, this becomes the standard normal distribution.
+    With the default shape parameter of 2.0, this becomes the standard normal
+    distribution.
 
     Parameters
     ----------
@@ -79,19 +82,23 @@ def _sged_params(nu: float, xi: float) -> tuple[float, float, float]:
 def _dsged(x: float, nu: float = 2.0, xi: float = 1.0) -> float:
     """Density function of a skewed generalised error distribution
 
-    This is a Python implementation of the code in https://rdrr.io/cran/fGarch/src/R/dist-sged.R
+    This is a Python implementation of the code in
+    https://rdrr.io/cran/fGarch/src/R/dist-sged.R
 
-    Under the default values of the parameters, this becomes the density of the standard normal distribution.
+    Under the default values of the parameters, this becomes the density of
+    the standard normal distribution.
 
     Parameters
     ----------
     x: float
         the point at which to evaluate the density function
     nu: float
-        the shape parameter that determines the tail weight: higher values of `nu` result in lighter tails.
+        the shape parameter that determines the tail weight: higher values of `nu`
+        result in lighter tails.
         Default: 2.0
     xi: float
-        the shape parameter that determines the skewness: value of `xi` above 1 result in right-skewness,
+        the shape parameter that determines the skewness: value of `xi` above 1
+        result in right-skewness,
         values between 0 and 1 result in left-skewness. Default: 1.0
 
     Returns
@@ -108,12 +115,17 @@ def _dsged(x: float, nu: float = 2.0, xi: float = 1.0) -> float:
     return Density * sigma
 
 
-def dsged(x: float, loc: float = 0.0, scale: float = 1.0, nu: float = 2.0, xi: float = 1.0) -> float:
-    """Density function of a skewed generalised error distribution with location and scale parameters
+def dsged(
+        x: float, loc: float = 0.0, scale: float = 1.0, nu: float = 2.0, xi: float = 1.0
+) -> float:
+    """Density function of a skewed generalised error distribution with location
+    and scale parameters
 
-    This is a Python implementation of the code in https://rdrr.io/cran/fGarch/src/R/dist-sged.R
+    This is a Python implementation of the code in
+    https://rdrr.io/cran/fGarch/src/R/dist-sged.R
 
-    Under the default values of the parameters, this becomes the density of the standard normal distribution.
+    Under the default values of the parameters, this becomes the density of
+    the standard normal distribution.
 
     Parameters
     ----------
@@ -124,10 +136,12 @@ def dsged(x: float, loc: float = 0.0, scale: float = 1.0, nu: float = 2.0, xi: f
     scale: float
         the scale parameter. Default: 1.0
     nu: float
-        the shape parameter that determines the tail weight: higher values of `nu` result in lighter tails.
+        the shape parameter that determines the tail weight: higher values of `nu`
+        result in lighter tails.
         Default: 2.0
     xi: float
-        the shape parameter that determines the skewness: value of `xi` above 1 result in right-skewness,
+        the shape parameter that determines the skewness: value of `xi` above 1
+        result in right-skewness,
         values between 0 and 1 result in left-skewness. Default: 1.0
 
     Returns
@@ -139,7 +153,8 @@ def dsged(x: float, loc: float = 0.0, scale: float = 1.0, nu: float = 2.0, xi: f
 
 
 def _sstd_params(nu: float, xi: float) -> tuple[float, float, float]:
-    """Calculate parameters of a symmetric t-distribution for transforming it into a skewed t-distribution
+    """Calculate parameters of a symmetric t-distribution for transforming it
+    into a skewed t-distribution
 
     Parameters
     ----------
@@ -165,10 +180,12 @@ def _sstd_params(nu: float, xi: float) -> tuple[float, float, float]:
 def _dsstd(x: float, nu: float, xi: float) -> float:
     """Density function of a skewed t-distribution
 
-    This is a Python implementation of the code in https://github.com/cran/fGarch/blob/master/R/dist-sstd.R
+    This is a Python implementation of the code in
+    https://github.com/cran/fGarch/blob/master/R/dist-sstd.R
 
-    The transformation to the skewed distribution is only defined when `nu` >= 2. The scale of the resulting
-    distribution is adjusted for the degrees of freedom so that its variance is always 1.
+    The transformation to the skewed distribution is only defined when `nu` >= 2.
+    The scale of the resulting distribution is adjusted for the degrees of freedom
+    so that its variance is always 1.
 
     Parameter
     ---------
@@ -196,10 +213,12 @@ def _dsstd(x: float, nu: float, xi: float) -> float:
 def dsstd(x: float, mean: float, sd: float, nu: float, xi: float) -> float:
     """Density function of a skewed t-distribution with location and scale parameters
 
-    This is a Python implementation of the code in https://github.com/cran/fGarch/blob/master/R/dist-sstd.R
+    This is a Python implementation of the code in
+    https://github.com/cran/fGarch/blob/master/R/dist-sstd.R
 
-    The transformation to the skewed distribution is only defined when `nu` >= 2. The scale of the resulting
-    distribution is adjusted for the degrees of freedom so that its variance is always 1.
+    The transformation to the skewed distribution is only defined when `nu` >= 2.
+    The scale of the resulting distribution is adjusted for the degrees of freedom
+    so that its variance is always 1.
 
     Parameter
     ---------
@@ -225,10 +244,12 @@ def dsstd(x: float, mean: float, sd: float, nu: float, xi: float) -> float:
 def _qsstd(p: float, nu: float, xi: float) -> float:
     """Quantile function of a skewed t-distribution
 
-    This is a Python implementation of the code in https://github.com/cran/fGarch/blob/master/R/dist-sstd.R
+    This is a Python implementation of the code in
+    https://github.com/cran/fGarch/blob/master/R/dist-sstd.R
 
-    The transformation to the skewed distribution is only defined when `nu` >= 2. The scale of the resulting
-    distribution is adjusted for the degrees of freedom so that its variance is always 1.
+    The transformation to the skewed distribution is only defined when `nu` >= 2.
+    The scale of the resulting distribution is adjusted for the degrees of freedom
+    so that its variance is always 1.
 
     Parameter
     ---------
@@ -252,16 +273,20 @@ def _qsstd(p: float, nu: float, xi: float) -> float:
     p = (np.heaviside(pxi, 0.5) - sig * p) / (g * Xi)
 
     # the quantile of the standardised skewed t-distribution
-    return (-sig * stats.t.ppf(p, scale=Xi * np.sqrt((nu - 2) / nu), df=nu) - mu) / sigma
+    return (
+            -sig * stats.t.ppf(p, scale=Xi * np.sqrt((nu - 2) / nu), df=nu) - mu
+    ) / sigma
 
 
 def qsstd(p: float, mean: float, sd: float, nu: float, xi: float) -> float:
     """Quantile function of a skewed t-distribution with location and scale parameters
 
-    This is a Python implementation of the code in https://github.com/cran/fGarch/blob/master/R/dist-sstd.R
+    This is a Python implementation of the code in
+    https://github.com/cran/fGarch/blob/master/R/dist-sstd.R
 
-    The transformation to the skewed distribution is only defined when `nu` >= 2. The scale of the resulting
-    distribution is adjusted for the degrees of freedom so that its variance is always 1.
+    The transformation to the skewed distribution is only defined when `nu` >= 2.
+    The scale of the resulting distribution is adjusted for the degrees of freedom
+    so that its variance is always 1.
 
     Parameter
     ---------
@@ -294,7 +319,8 @@ def rsstd(
 ) -> np.ndarray:
     """Sample from a skewed t-distribution
 
-    This is a Python implementation of the code in https://github.com/cran/fGarch/blob/master/R/dist-sstd.R
+    This is a Python implementation of the code in
+    https://github.com/cran/fGarch/blob/master/R/dist-sstd.R
 
     Parameter
     ---------
@@ -309,18 +335,24 @@ def rsstd(
     xi: float
         the shape parameter that determines the skewness
     random_state: np.random.Generator | None
-        the random number generator to use. If not provided, use the default numpy generator.
+        the random number generator to use. If not provided, use the default numpy
+        generator.
 
     Returns
     -------
     np.ndarray
-        the array of the requested shape containing the samples drawn from this distribution
+        the array of the requested shape containing the samples drawn from this
+        distribution
     """
     # Generate Random Deviates:
     weight = xi / (xi + 1 / xi)
     z = stats.uniform.rvs(size=size, loc=-weight, scale=1, random_state=random_state)
     Xi = xi ** np.sign(z)
-    r = -np.abs(stats.t.rvs(size=size, scale=np.sqrt((nu - 2) / nu), df=nu, random_state=random_state)) / Xi * np.sign(z)
+    r = -np.abs(
+        stats.t.rvs(
+            size=size, scale=np.sqrt((nu - 2) / nu), df=nu, random_state=random_state
+        )
+    ) / Xi * np.sign(z)
 
     # Scale:
     mu, sigma, _ = _sstd_params(nu, xi)
